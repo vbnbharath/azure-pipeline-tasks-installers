@@ -1,0 +1,139 @@
+name: Bug Report
+description: Report a defect in an installer task, packaging flow, or release workflow.
+title: "[BUG] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem.
+        Include the failing task, requested CLI version, and any relevant pipeline logs so the issue can be reproduced quickly.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      description: Select the task or repo area impacted by the bug.
+      options:
+        - InstallArgoCDCLI
+        - InstallCheckmarxOneCLI
+        - InstallDatabricksCLI
+        - InstallHashicorpSentinelCLI
+        - InstallOpenTofuCLI
+        - InstallPackerCLI
+        - InstallWizCLI
+        - Extension packaging or manifest
+        - GitHub Actions publish workflow
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: cli-version
+    attributes:
+      label: Requested CLI version
+      description: Enter the version passed to the task, for example `latest` or `1.8.8`.
+      placeholder: latest
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent-os
+    attributes:
+      label: Agent operating system
+      description: Which Azure Pipelines agent OS is affected?
+      options:
+        - Ubuntu
+        - Windows
+        - macOS
+        - Multiple
+        - Unknown
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent-type
+    attributes:
+      label: Agent type
+      description: What kind of build agent is running the task?
+      options:
+        - Microsoft-hosted
+        - Self-hosted
+        - Both
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the failure clearly and include the observed error.
+      placeholder: The task failed while downloading the CLI and exited before setting cliLocation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Provide the smallest set of steps needed to reproduce the problem.
+      placeholder: |
+        1. Add InstallOpenTofuCLI@1 to a pipeline.
+        2. Set version to latest.
+        3. Run on ubuntu-latest.
+        4. Observe the task failure.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe what you expected to happen instead.
+      placeholder: The task should download the requested CLI, add it to PATH, and set cliLocation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: pipeline
+    attributes:
+      label: Pipeline snippet
+      description: Share the relevant YAML used to reproduce the issue.
+      render: yaml
+      placeholder: |
+        steps:
+          - task: InstallOpenTofuCLI@1
+            inputs:
+              version: latest
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste the task logs or stack trace. Remove secrets before submitting.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add anything else that may help, such as screenshots, links, or suspected root cause.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submit checklist
+      options:
+        - label: I searched existing issues before opening this report.
+          required: true
+        - label: I removed secrets or sensitive data from the logs and YAML above.
+          required: true

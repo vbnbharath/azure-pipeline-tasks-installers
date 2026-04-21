@@ -1,0 +1,12 @@
+{
+  "messages": {
+    "VerifyCLIInstallation": "Verifying %s CLI installation...",
+    "InputVersionNotValidSemanticVersion": "Input version %s is not a valid semantic version",
+    "CLINotFoundInFolder": "%s CLI executable not found in path %s",
+    "OperatingSystemNotSupported": "Operating system %s is not supported",
+    "ArchitectureNotSupported": "Architecture %s is not supported",
+    "CLIDownloadFailed": "Failed to download %s CLI from url %s. Error %s",
+    "CLIVersionNotFound": "Unable to get latest version: %s defaulting to %s",
+    "GettingLatestCLIVersion": "Getting latest %s CLI version."
+  }
+}

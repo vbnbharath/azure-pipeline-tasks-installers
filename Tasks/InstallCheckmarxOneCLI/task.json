@@ -1,0 +1,45 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "4fd4ed38-3750-4671-a7dd-b11e62e8d3b4",
+    "name": "InstallCheckmarxOneCLI",
+    "friendlyName": "Checkmarx One CLI Tool Installer",
+    "description": "Find in cache or download a specific version of Checkmarx One CLI and prepend it to the PATH",
+    "author": "Bharath Veeravalli",
+    "helpMarkDown": "",
+    "category": "Tool",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "demands": [],
+    "version": {
+        "Major": "1",
+        "Minor": "0",
+        "Patch": "0"
+    },
+    "instanceNameFormat": "Setup: Install CheckmarxOne CLI $(version)",
+    "inputs": [
+        {
+            "name": "version",
+            "type": "string",
+            "label": "Version",
+            "defaultValue": "latest",
+            "required": true,
+            "helpMarkDown": "The version of CheckmarxOne CLI which should be installed on the agent if not already present"
+        }
+    ],
+    "execution": {
+        "Node20_1": {
+            "target": "InstallCheckmarxOneCLI/InstallCheckmarxOneCLI.js"
+        },
+        "Node24": {
+            "target": "InstallCheckmarxOneCLI/InstallCheckmarxOneCLI.js"
+        }
+    },
+    "outputVariables": [
+        {
+            "name": "cliLocation",
+            "description": "The location of the CheckmarxOne cli binary that was installed on the agent."
+        }
+    ]
+}

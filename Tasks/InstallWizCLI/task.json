@@ -1,0 +1,45 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "5da0ead7-1384-4fea-80e7-aba545becc2a",
+    "name": "InstallWizCLI",
+    "friendlyName": "Wiz.io CLI Tool Installer",
+    "description": "Find in cache or download a specific version of Wiz.io CLI and prepend it to the PATH",
+    "author": "Bharath Veeravalli",
+    "helpMarkDown": "",
+    "category": "Tool",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "demands": [],
+    "version": {
+        "Major": "1",
+        "Minor": "0",
+        "Patch": "0"
+    },
+    "instanceNameFormat": "Setup: Install Wiz CLI $(version)",
+    "inputs": [
+        {
+            "name": "version",
+            "type": "string",
+            "label": "Version",
+            "defaultValue": "latest",
+            "required": true,
+            "helpMarkDown": "The version of Wiz.io CLI which should be installed on the agent if not already present"
+        }
+    ],
+    "execution": {
+        "Node20_1": {
+            "target": "InstallWizCLI/InstallWizCLI.js"
+        },
+        "Node24": {
+            "target": "InstallWizCLI/InstallWizCLI.js"
+        }
+    },
+    "outputVariables": [
+        {
+            "name": "cliLocation",
+            "description": "The location of the Wiz.io cli binary that was installed on the agent."
+        }
+    ]
+}

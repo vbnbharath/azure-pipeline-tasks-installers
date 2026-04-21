@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Repository Documentation
+    url: https://github.com/vbnbharath/azure-pipeline-tasks-installers/blob/main/README.md
+    about: Review the README for supported tasks, inputs, outputs, and packaging commands.

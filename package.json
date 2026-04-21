@@ -1,0 +1,28 @@
+{
+    "name": "installers",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "clean": "rimraf -g \"./*.vsix\"",
+        "build:release": "npm run clean && npm run deps && npm run compile && npm run deps:prune",
+        "package:release": "tfx extension create --json --no-color --manifest-globs azure-devops-extension.json --root ./",
+        "deps": "npm run deps:npm:ci",
+        "deps-local": "npm run deps:npm:inst",
+        "deps:npm:inst": "glob-exec --parallel --foreach \"Tasks/*/tsconfig.json\" -- \"cd {{file.dir}} && npm install --include=dev --no-update-notifier --no-progress\"",
+        "deps:npm:ci": "glob-exec --parallel --foreach \"Tasks/*/tsconfig.json\" -- \"cd {{file.dir}} && npm ci --include=dev --no-update-notifier --no-progress\"",
+        "deps:prune": "npm run deps:prune:inst",
+        "deps:prune:inst": "glob-exec --parallel --foreach \"Tasks/*/tsconfig.json\" -- \"cd {{file.dir}} && npm prune --production --no-update-notifier --no-progress\"",
+        "compile": "npm run compile:inst",
+        "compile:inst": "glob-exec \"Tasks/*/tsconfig.json\" -- \"tsc -b {{files.join(' ')}}\""
+    },
+    "devDependencies": {
+        "@types/node": "^25.5.0",
+        "azure-pipelines-task-lib": "^5.2.8",
+        "azure-pipelines-tool-lib": "^2.0.12",
+        "glob-exec": "^0.1.1",
+        "glob-parent": ">=6.0.2",
+        "rimraf": "6.1.2",
+        "tfx-cli": "^0.23.1",
+        "typescript": "^6.0.3"
+    }
+}

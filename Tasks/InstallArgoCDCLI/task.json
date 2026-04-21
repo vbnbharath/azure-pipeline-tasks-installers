@@ -1,0 +1,45 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "e99466f4-d97b-4c57-a4ad-b700728afd04",
+    "name": "InstallArgoCDCLI",
+    "friendlyName": "Argo CD CLI Tool Installer",
+    "description": "Find in cache or download a specific version of Argo CD CLI and prepend it to the PATH",
+    "author": "Bharath Veeravalli",
+    "helpMarkDown": "",
+    "category": "Tool",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "demands": [],
+    "version": {
+        "Major": "1",
+        "Minor": "0",
+        "Patch": "0"
+    },
+    "instanceNameFormat": "Setup: Install ArgoCD CLI $(version)",
+    "inputs": [
+        {
+            "name": "version",
+            "type": "string",
+            "label": "Version",
+            "defaultValue": "latest",
+            "required": true,
+            "helpMarkDown": "The version of ArgoCD CLI which should be installed on the agent if not already present"
+        }
+    ],
+    "execution": {
+        "Node20_1": {
+            "target": "InstallArgoCDCLI/InstallArgoCDCLI.js"
+        },
+        "Node24": {
+            "target": "InstallArgoCDCLI/InstallArgoCDCLI.js"
+        }
+    },
+    "outputVariables": [
+        {
+            "name": "cliLocation",
+            "description": "The location of the ArgoCD cli binary that was installed on the agent."
+        }
+    ]
+}
