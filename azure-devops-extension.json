@@ -3,7 +3,7 @@
     "id": "installers",
     "publisher": "vbnbharath",
     "name": "Azure Pipelines CLI Installer Tasks",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Azure Pipelines Tasks that installs CLI tools on demand in pipeline jobs, adds them to PATH",
     "tags": [
         "Extension",

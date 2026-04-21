@@ -14,5 +14,7 @@ updates:
       - "/Tasks/InstallDatabricksCLI"
       - "/Tasks/InstallHashicorpSentinelCLI"
       - "/Tasks/InstallOpenTofuCLI"
+      - "/Tasks/InstallPackerCLI"
+      - "/Tasks/InstallWizCLI"
     schedule:
       interval: "weekly"

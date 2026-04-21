@@ -3,7 +3,7 @@ name: 'ADO Extension: Build and Publish'
 on:
   push:
     branches:
-      - '**'
+      - 'main'
   pull_request:
   workflow_dispatch:
     inputs:
@@ -237,7 +237,7 @@ jobs:
       - name: 'Package: Publish Extension'
         run: |
           tfx extension publish --json --no-color `
-            --vsix "${{ needs.build.outputs.adoPublisher }}.${{ needs.build.outputs.adoExtensionId }}-${{ needs.build.outputs.relVersion }}.vsix" ``
+            --vsix "${{ needs.build.outputs.adoPublisher }}.${{ needs.build.outputs.adoExtensionId }}-${{ needs.build.outputs.relVersion }}.vsix" `
             --token "${{ secrets.AZDO_MARKETPLACE_TOKEN }}" `
             --no-prompt
 
