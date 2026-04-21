@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/Tasks/Common"
+      - "/Tasks/InstallArgoCDCLI"
+      - "/Tasks/InstallCheckmarxOneCLI"
+      - "/Tasks/InstallDatabricksCLI"
+      - "/Tasks/InstallHashicorpSentinelCLI"
+      - "/Tasks/InstallOpenTofuCLI"
+    schedule:
+      interval: "weekly"

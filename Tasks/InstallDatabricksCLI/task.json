@@ -1,0 +1,45 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "e4480923-6dad-49e8-9f5e-c5df8b8063f8",
+    "name": "InstallDatabricksCLI",
+    "friendlyName": "Databricks CLI Tool Installer",
+    "description": "Find in cache or download a specific version of Databricks CLI and prepend it to the PATH",
+    "author": "Bharath Veeravalli",
+    "helpMarkDown": "",
+    "category": "Tool",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "demands": [],
+    "version": {
+        "Major": "1",
+        "Minor": "0",
+        "Patch": "0"
+    },
+    "instanceNameFormat": "Setup: Install Databricks CLI $(version)",
+    "inputs": [
+        {
+            "name": "version",
+            "type": "string",
+            "label": "Version",
+            "defaultValue": "latest",
+            "required": true,
+            "helpMarkDown": "The version of Databricks CLI which should be installed on the agent if not already present"
+        }
+    ],
+    "execution": {
+        "Node20_1": {
+            "target": "InstallDatabricksCLI/InstallDatabricksCLI.js"
+        },
+        "Node24": {
+            "target": "InstallDatabricksCLI/InstallDatabricksCLI.js"
+        }
+    },
+    "outputVariables": [
+        {
+            "name": "cliLocation",
+            "description": "The location of the Databricks cli binary that was installed on the agent."
+        }
+    ]
+}

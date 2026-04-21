@@ -137,3 +137,12 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# ADO Plugins
+Tasks/*/*.js
+*.js
+*.js.map
+Tasks/*/dist/*
+Tasks/*Install*/Common/
+Tasks/*Install*/*Install*/
+*.vsix

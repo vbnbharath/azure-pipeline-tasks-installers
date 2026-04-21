@@ -1,0 +1,258 @@
+name: 'ADO Extension: Build and Publish'
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      publish_dev:
+        description: Publish the private -dev extension
+        required: false
+        type: boolean
+        default: false
+      publish_release:
+        description: Publish the release Marketplace extension
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: extension-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: pwsh
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+      pull-requests: write
+    outputs:
+      adoPublisher: ${{ steps.devManifest.outputs.adoPublisher }}
+      adoExtensionId: ${{ steps.devManifest.outputs.adoExtensionId }}
+      nodeVersion: ${{ steps.setupNode.outputs.node-version }}
+      devVersion: ${{ steps.devManifest.outputs.devVersion }}
+      relVersion: ${{ steps.devManifest.outputs.relVersion }}
+    steps:
+      - name: 'Git: Checkout Repository ${{ github.repository }}'
+        uses: actions/checkout@v6
+
+      - name: 'Setup: Install Node.js'
+        id: setupNode
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: 'CodeQL: Initialize SAST Analysis'
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+
+      - name: 'Setup: Install root dependencies'
+        run: npm ci --no-update-notifier --no-progress
+
+      - name: 'Build: Extension'
+        run: npm run build:release
+
+      - name: 'CodeQL: Run SAST Analysis'
+        uses: github/codeql-action/analyze@v4
+      
+      - name: 'Dependabot: Run SCA Scan'
+        if: ${{ (github.event_name == 'pull_request' && github.base_ref == 'main') }}
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: 'critical'
+          comment-summary-in-pr: 'on-failure'
+
+      - name: 'Package: Create dev extension manifest'
+        id: devManifest
+        run: |
+          $manifest = Get-Content 'azure-devops-extension.json' | ConvertFrom-Json
+
+          $extensionId = $manifest.id
+          $manifest.id = "$($manifest.id)-dev"
+          $manifest.name = "$($manifest.name) [DEV]"
+          $manifest.public = $false
+          $relVersion = $manifest.version
+
+          if (-not $manifest.tags) {
+            $manifest | Add-Member -NotePropertyName tags -NotePropertyValue @()
+          }
+
+          if (-not ($manifest.tags -contains 'dev')) {
+            $manifest.tags += 'dev'
+          }
+
+          $versionParts = @($manifest.version -split '\.')
+          if ($versionParts.Count -lt 3) {
+            throw "Expected azure-devops-extension.json version to contain at least three dot-separated numeric parts."
+          }
+
+          if ($versionParts.Count -eq 3) {
+            $versionParts += '${{ github.run_number }}'
+          }
+          else {
+            $versionParts[3] = '${{ github.run_number }}'
+          }
+
+          $devVersion = ($versionParts -join '.')
+          $manifest.version = $devVersion
+
+          $manifestPath = Join-Path $env:GITHUB_WORKSPACE 'azure-devops-extension.dev.json'
+          $manifest | ConvertTo-Json -Depth 100 | Set-Content -Path $manifestPath -Encoding utf8
+
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "devManifestPath=$manifestPath"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "adoPublisher=$($manifest.publisher)"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "adoExtensionId=$extensionId"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "relVersion=$relVersion"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "devVersion=$devVersion"
+
+      - name: 'Setup: Install tfx-cli'
+        run: npm install -g tfx-cli
+
+      - name: 'Package: Extension - Dev Version'
+        run: |
+          tfx extension create --json --no-color `
+            --manifests "${{ steps.devManifest.outputs.devManifestPath }}" `
+            --root ./ --no-prompt
+
+      - name: 'Package: Extension - Release Version'
+        run: |
+          tfx extension create --json --no-color `
+            --manifests azure-devops-extension.json `
+            --root ./ --no-prompt
+
+      - name: 'Artifact: Upload VSIX File - Dev'
+        if: >-
+          ${{ 
+            (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') ||
+            (github.event_name == 'workflow_dispatch' && inputs.publish_dev)
+          }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: dev-vsix
+          path: "${{ steps.devManifest.outputs.adoPublisher }}.${{ steps.devManifest.outputs.adoExtensionId }}-dev-${{ steps.devManifest.outputs.devVersion }}.vsix"
+          if-no-files-found: error
+
+      - name: 'Artifact: Upload VSIX File - Release'
+        if: >-
+          ${{ 
+            (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') ||
+            (github.event_name == 'workflow_dispatch' && inputs.publish_release && github.ref == 'refs/heads/main')
+          }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-vsix
+          path: "${{ steps.devManifest.outputs.adoPublisher }}.${{ steps.devManifest.outputs.adoExtensionId }}-${{ steps.devManifest.outputs.relVersion }}.vsix"
+          if-no-files-found: error
+
+  publish_dev:
+    name: Publish Dev
+    needs: build
+    runs-on: windows-latest
+    timeout-minutes: 30
+    environment: Development
+    if: >-
+      ${{
+        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+        (github.event_name == 'workflow_dispatch' && inputs.publish_dev)
+      }}
+    steps:
+      - name: 'Artifact: Download VSIX File'
+        uses: actions/download-artifact@v8
+        with:
+          name: dev-vsix
+          pattern: '*.vsix'
+
+      - name: 'Setup: Install Node.js'
+        uses: actions/setup-node@v6
+        with:
+          node-version: '${{ needs.build.outputs.nodeVersion }}'
+      
+      - name: 'Setup: Install tfx-cli'
+        run: npm install -g tfx-cli
+
+      - name: 'Package: Publish Extension'
+        run: |
+          tfx extension publish --json --no-color `
+            --vsix "${{ needs.build.outputs.adoPublisher }}.${{ needs.build.outputs.adoExtensionId }}-dev-${{ needs.build.outputs.devVersion }}.vsix" `
+            --share-with "${{ vars.AZDO_DEV_EXTENSION_ORG_SHARE_WITH }}" `
+            --token "${{ secrets.AZDO_MARKETPLACE_TOKEN }}" `
+            --no-prompt
+
+      - name: 'Package: Install Extension'
+        run: |
+          tfx extension install --json --no-color `
+            --vsix "${{ needs.build.outputs.adoPublisher }}.${{ needs.build.outputs.adoExtensionId }}-dev-${{ needs.build.outputs.devVersion }}.vsix" `
+            --token "${{ secrets.AZDO_MARKETPLACE_TOKEN }}" `
+            --service-url "https://dev.azure.com/${{ vars.AZDO_DEV_EXTENSION_ORG_SHARE_WITH }}" `
+            --no-prompt
+
+      - name: 'Test: Trigger Validation Pipeline'
+        uses: Azure/pipelines@v1.2
+        with:
+          azure-devops-project-url: 'https://dev.azure.com/${{ vars.AZDO_DEV_EXTENSION_ORG_SHARE_WITH }}/${{ vars.AZDO_EXTENSION_PROJECT }}'
+          azure-pipeline-name: '${{ vars.AZDO_TEST_PIPELINE_NAME }}'
+          azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
+          azure-pipeline-variables: '{"extensionVariant": "dev"}'
+
+  publish_release:
+    name: Publish Release
+    needs: publish_dev
+    runs-on: windows-latest
+    timeout-minutes: 30
+    environment: Production
+    if: >-
+      ${{
+        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+        (github.event_name == 'workflow_dispatch' && inputs.publish_release && github.ref == 'refs/heads/main')
+      }}
+    steps:
+      - name: 'Artifact: Download VSIX File'
+        uses: actions/download-artifact@v8
+        with:
+          name: release-vsix
+          pattern: '*.vsix'
+
+      - name: 'Setup: Install Node.js'
+        uses: actions/setup-node@v6
+        with:
+          node-version: '${{ needs.build.outputs.nodeVersion }}'
+
+      - name: 'Setup: Install tfx-cli'
+        run: npm install -g tfx-cli
+
+      - name: 'Package: Publish Extension'
+        run: |
+          tfx extension publish --json --no-color `
+            --vsix "${{ needs.build.outputs.adoPublisher }}.${{ needs.build.outputs.adoExtensionId }}-${{ needs.build.outputs.relVersion }}.vsix" ``
+            --token "${{ secrets.AZDO_MARKETPLACE_TOKEN }}" `
+            --no-prompt
+
+      - name: 'Package: Install Extension'
+        run: |
+          tfx extension install --json --no-color `
+            --vsix "${{ needs.build.outputs.adoPublisher }}.${{ needs.build.outputs.adoExtensionId }}-dev-${{ needs.build.outputs.relVersion }}.vsix" `
+            --token "${{ secrets.AZDO_MARKETPLACE_TOKEN }}" `
+            --service-url "https://dev.azure.com/${{ vars.AZDO_DEV_EXTENSION_ORG_SHARE_WITH }}" `
+            --no-prompt
+
+      - name: 'Test: Trigger Validation Pipeline'
+        uses: Azure/pipelines@v1.2
+        with:
+          azure-devops-project-url: 'https://dev.azure.com/${{ vars.AZDO_DEV_EXTENSION_ORG_SHARE_WITH }}/${{ vars.AZDO_EXTENSION_PROJECT }}'
+          azure-pipeline-name: '${{ vars.AZDO_TEST_PIPELINE_NAME }}'
+          azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
+          azure-pipeline-variables: '{"extensionVariant": "release"}'

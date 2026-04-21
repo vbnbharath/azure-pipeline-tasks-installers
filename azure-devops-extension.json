@@ -1,0 +1,155 @@
+{
+    "manifestVersion": 1,
+    "id": "installers",
+    "publisher": "vbnbharath",
+    "name": "Azure Pipelines CLI Installer Tasks",
+    "version": "1.0.0",
+    "description": "Azure Pipelines Tasks that installs CLI tools on demand in pipeline jobs, adds them to PATH",
+    "tags": [
+        "Extension",
+        "Release",
+        "Azure Pipelines",
+        "DevOps",
+        "Databricks",
+        "Argo CD",
+        "Hashicorp",
+        "Sentinel",
+        "Tofu",
+        "OpenTofu",
+        "CheckmarxOne",
+        "Packer",
+        "Wiz",
+        "Wiz.io",
+        "CLI",
+        "Tools"
+    ],
+    "public": true,
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "scopes": [],
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "links": {
+        "repository": {
+            "uri": "https://github.com/vbnbharath/azure-pipeline-tasks-installers"
+        },
+        "issues": {
+            "uri": "https://github.com/vbnbharath/azure-pipeline-tasks-installers/issues"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/vbnbharath/azure-pipeline-tasks-installers"
+    },
+    "content": {
+        "details": {
+            "path": "docs.md"
+        }
+    },
+    "branding": {
+        "color": "#3293F3",
+        "theme": "dark"
+    },
+    "icons": {
+        "default": "extensionIcon.png"
+    },
+    "files": [
+        {
+            "path": "Tasks/InstallArgoCDCLI"
+        },
+        {
+            "path": "Tasks/InstallCheckMarxOneCLI"
+        },
+        {
+            "path": "Tasks/InstallDatabricksCLI"
+        },
+        {
+            "path": "Tasks/InstallHashicorpSentinelCLI"
+        },
+        {
+            "path": "Tasks/InstallOpenTofuCLI"
+        },
+        {
+            "path": "Tasks/InstallPackerCLI"
+        },
+        {
+            "path": "Tasks/InstallWizCLI"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "argo",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/InstallArgoCDCLI"
+            }
+        },
+        {
+            "id": "cx1",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/InstallCheckMarxOneCLI"
+            }
+        },
+        {
+            "id": "dbx",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/InstallDatabricksCLI"
+            }
+        },
+        {
+            "id": "hcp",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/InstallHashicorpSentinelCLI"
+            }
+        },
+        {
+            "id": "tofu",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/InstallOpenTofuCLI"
+            }
+        },
+        {
+            "id": "pkr",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/InstallPackerCLI"
+            }
+        },
+        {
+            "id": "wiz",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tasks/InstallWizCLI"
+            }
+        }
+    ]
+}

@@ -1,0 +1,45 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "7a15433f-1f54-4ede-b905-4e7e0207458f",
+    "name": "InstallOpenTofuCLI",
+    "friendlyName": "OpenTofu CLI Tool Installer",
+    "description": "Find in cache or download a specific version of OpenTofu CLI and prepend it to the PATH",
+    "author": "Bharath Veeravalli",
+    "helpMarkDown": "",
+    "category": "Tool",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "demands": [],
+    "version": {
+        "Major": "1",
+        "Minor": "0",
+        "Patch": "0"
+    },
+    "instanceNameFormat": "Setup: Install OpenTofu CLI $(version)",
+    "inputs": [
+        {
+            "name": "version",
+            "type": "string",
+            "label": "Version",
+            "defaultValue": "latest",
+            "required": true,
+            "helpMarkDown": "The version of OpenTofu CLI which should be installed on the agent if not already present"
+        }
+    ],
+    "execution": {
+        "Node20_1": {
+            "target": "InstallOpenTofuCLI/InstallOpenTofuCLI.js"
+        },
+        "Node24": {
+            "target": "InstallOpenTofuCLI/InstallOpenTofuCLI.js"
+        }
+    },
+    "outputVariables": [
+        {
+            "name": "cliLocation",
+            "description": "The location of the OpenTofu cli binary that was installed on the agent."
+        }
+    ]
+}

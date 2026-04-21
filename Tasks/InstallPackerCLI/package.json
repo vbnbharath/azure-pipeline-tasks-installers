@@ -1,0 +1,22 @@
+{
+  "name": "packer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "minimumAgentVersion": "2.220.0",
+  "dependencies": {
+    "azure-pipelines-task-lib": "^5.2.8",
+    "azure-pipelines-tool-lib": "^2.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/mocha": "^10.0.10",
+    "@types/q": "^1.5.8",
+    "typescript": "^6.0.3"
+  }
+}

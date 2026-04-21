@@ -1,0 +1,87 @@
+trigger: none
+pr: none
+
+pool:
+  vmImage: 'windows-latest'
+
+stages:
+  - stage: test
+    displayName: Test
+    jobs:
+      - job: test
+        displayName: "Test Plugins"
+        strategy:
+          matrix:
+            linux:
+              imageName: 'ubuntu-latest'
+            windows:
+              imageName: 'windows-latest'
+        pool:
+          vmImage: $(imageName)
+        steps:
+          - checkout: none
+            displayName: 'Git: Skip Default Checkout'
+
+          # Dev tasks
+          - task: vbnbharath.installers-dev.argo.InstallArgoCDCLI@1
+            displayName: 'Install Argo CD CLI (Dev)'
+            condition: and(succeeded(), eq(variables['extensionVariant'], 'dev'))
+            inputs:
+              version: 'latest'
+
+          - task: vbnbharath.installers-dev.cx1.InstallCheckmarxOneCLI@1
+            displayName: 'Install Checkmarx One CLI (Dev)'
+            condition: and(succeeded(), eq(variables['extensionVariant'], 'dev'))
+            inputs:
+              version: 'latest'
+
+          - task: vbnbharath.installers-dev.dbx.InstallDatabricksCLI@1
+            displayName: 'Install Databricks CLI (Dev)'
+            condition: and(succeeded(), eq(variables['extensionVariant'], 'dev'))
+            inputs:
+              version: 'latest'
+
+          - task: vbnbharath.installers-dev.hcp.InstallHashicorpSentinelCLI@1
+            displayName: 'Install Hashicorp Sentinel CLI (Dev)'
+            condition: and(succeeded(), eq(variables['extensionVariant'], 'dev'))
+            inputs:
+              version: 'latest'
+
+          - task: vbnbharath.installers-dev.tofu.InstallOpenTofuCLI@1
+            displayName: 'Install OpenTofu CLI (Dev)'
+            condition: and(succeeded(), eq(variables['extensionVariant'], 'dev'))
+            inputs:
+              version: 'latest'
+
+          - task: vbnbharath.installers-dev.pkr.InstallPackerCLI@1
+            displayName: 'Install Packer CLI (Dev)'
+            condition: and(succeeded(), eq(variables['extensionVariant'], 'dev'))
+            inputs:
+              version: 'latest'
+
+          - task: vbnbharath.installers-dev.wiz.InstallWizCLI@1
+            displayName: 'Install Wiz.io CLI (Dev)'
+            condition: and(succeeded(), eq(variables['extensionVariant'], 'dev'))
+            inputs:
+              version: 'latest'
+
+          - script: argocd version --client
+            displayName: 'Validate: Argo CD CLI Install'
+
+          - script: cx version
+            displayName: 'Validate: Checkmarx One CLI Install'
+
+          - script: databricks version
+            displayName: 'Validate: Databricks CLI Install'
+
+          - script: sentinel version
+            displayName: 'Validate: Hashicorp Sentinel CLI Install'
+
+          - script: tofu version
+            displayName: 'Validate: OpenTofu CLI Install'
+
+          - script: packer --version
+            displayName: 'Validate: Packer CLI Install'
+
+          - script: wizcli version
+            displayName: 'Validate: Wiz CLI Install'

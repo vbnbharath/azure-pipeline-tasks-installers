@@ -1,0 +1,45 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "32631892-f53c-4b5d-a91a-57d2e93f3299",
+    "name": "InstallPackerCLI",
+    "friendlyName": "Packer CLI Tool Installer",
+    "description": "Find in cache or download a specific version of Packer CLI and prepend it to the PATH",
+    "author": "Bharath Veeravalli",
+    "helpMarkDown": "",
+    "category": "Tool",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "demands": [],
+    "version": {
+        "Major": "1",
+        "Minor": "0",
+        "Patch": "0"
+    },
+    "instanceNameFormat": "Setup: Install Packer CLI $(version)",
+    "inputs": [
+        {
+            "name": "version",
+            "type": "string",
+            "label": "Version",
+            "defaultValue": "latest",
+            "required": true,
+            "helpMarkDown": "The version of Packer CLI which should be installed on the agent if not already present"
+        }
+    ],
+    "execution": {
+        "Node20_1": {
+            "target": "InstallPackerCLI/InstallPackerCLI.js"
+        },
+        "Node24": {
+            "target": "InstallPackerCLI/InstallPackerCLI.js"
+        }
+    },
+    "outputVariables": [
+        {
+            "name": "cliLocation",
+            "description": "The location of the Packer cli binary that was installed on the agent."
+        }
+    ]
+}

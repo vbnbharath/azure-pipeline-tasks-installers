@@ -1,0 +1,94 @@
+name: Feature Request
+description: Suggest a new installer task or an improvement to the extension.
+title: "[FEATURE] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for new task ideas, capability gaps, and repo improvements.
+        Clear use cases and example pipeline YAML make feature requests much easier to evaluate.
+
+  - type: dropdown
+    id: request-type
+    attributes:
+      label: Request type
+      description: What kind of feature are you asking for?
+      options:
+        - New installer task for another CLI
+        - Enhancement to an existing installer task
+        - Packaging or extension manifest improvement
+        - GitHub Actions or release automation improvement
+        - Documentation improvement
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: target
+    attributes:
+      label: Affected task or CLI
+      description: Name the existing task or the CLI you want added.
+      placeholder: InstallHelmCLI or Helm
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: Explain the gap or pain point this feature would solve.
+      placeholder: We need to install Helm in Azure Pipelines without maintaining a custom script in every repo.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior you want to see in the extension.
+      placeholder: Add an InstallHelmCLI task that supports version pinning, tool cache reuse, PATH updates, and cliLocation output.
+    validations:
+      required: true
+
+  - type: textarea
+    id: pipeline
+    attributes:
+      label: Example pipeline usage
+      description: Show how you expect the feature to be used in YAML.
+      render: yaml
+      placeholder: |
+        steps:
+          - task: InstallHelmCLI@1
+            inputs:
+              version: latest
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe any workarounds or alternative approaches you evaluated.
+      placeholder: We currently curl the binary in a script step, but it is duplicated across many pipelines and does not use the Azure Pipelines tool cache.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add supporting links, API references, release pages, or related issues.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submit checklist
+      options:
+        - label: I searched existing issues before opening this request.
+          required: true
+        - label: I included enough detail to evaluate the value and scope of the request.
+          required: true
