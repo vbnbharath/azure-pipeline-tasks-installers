@@ -47,7 +47,7 @@ jobs:
       relVersion: ${{ steps.devManifest.outputs.relVersion }}
     steps:
       - name: 'Git: Checkout Repository ${{ github.repository }}'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 'Setup: Install Node.js'
         id: setupNode
