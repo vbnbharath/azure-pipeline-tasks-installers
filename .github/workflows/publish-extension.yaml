@@ -51,7 +51,7 @@ jobs:
 
       - name: 'Setup: Install Node.js'
         id: setupNode
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: '.nvmrc'
 
@@ -177,7 +177,7 @@ jobs:
           pattern: '*.vsix'
 
       - name: 'Setup: Install Node.js'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '${{ needs.build.outputs.nodeVersion }}'
       
@@ -227,7 +227,7 @@ jobs:
           pattern: '*.vsix'
 
       - name: 'Setup: Install Node.js'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '${{ needs.build.outputs.nodeVersion }}'
 
